@@ -1,13 +1,18 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Widgets/SCompoundWidget.h"
 
-/**
- * 
- */
+class FMenus
+{
+public:
+	static void Fill3DMenu(FMenuBuilder& MenuBuilder);
+
+protected:
+	static void Fill3DPresetMenu(FMenuBuilder& MenuBuilder);
+	static void Fill3DSettingsMenu(FMenuBuilder& MenuBuilder);
+};
+
 class DUSTER_API SMainWidget : public SCompoundWidget
 {
 public:
@@ -15,6 +20,10 @@ public:
 	{}
 	SLATE_END_ARGS()
 
-	/** Constructs this widget with InArgs */
+	SMainWidget() : CommandList(new FUICommandList){}
+
 	void Construct(const FArguments& InArgs);
+
+protected:
+	TSharedRef<FUICommandList> CommandList;
 };

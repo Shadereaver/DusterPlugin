@@ -1,6 +1,4 @@
-﻿// Copyright Epic Games, Inc. All Rights Reserved.
-
-#include "DusterStyle.h"
+﻿#include "DusterStyle.h"
 #include "Styling/SlateStyleRegistry.h"
 #include "Framework/Application/SlateApplication.h"
 #include "Interfaces/IPluginManager.h"

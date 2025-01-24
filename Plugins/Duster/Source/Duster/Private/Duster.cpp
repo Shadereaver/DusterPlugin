@@ -1,5 +1,3 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
-
 #include "Duster.h"
 #include "DusterStyle.h"
 #include "DusterCommands.h"

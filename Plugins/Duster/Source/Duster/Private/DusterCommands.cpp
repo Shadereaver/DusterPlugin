@@ -1,6 +1,4 @@
-﻿// Copyright Epic Games, Inc. All Rights Reserved.
-
-#include "DusterCommands.h"
+﻿#include "DusterCommands.h"
 
 #define LOCTEXT_NAMESPACE "FDusterModule"
 
