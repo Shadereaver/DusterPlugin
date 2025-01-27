@@ -1,7 +1,9 @@
 #include "Duster.h"
 #include "DusterStyle.h"
 #include "DusterCommands.h"
-#include "SMainWidget.h"
+#include "DusterDetails.h"
+#include "DusterDetailsCustomization.h"
+#include "SDusterWidget.h"
 #include "Widgets/Docking/SDockTab.h"
 #include "Widgets/Layout/SBox.h"
 #include "Widgets/Text/STextBlock.h"
@@ -27,6 +29,10 @@ void FDusterModule::StartupModule()
 	FGlobalTabmanager::Get()->RegisterNomadTabSpawner(DusterTabName, FOnSpawnTab::CreateRaw(this, &FDusterModule::OnSpawnPluginTab))
 	.SetDisplayName(LOCTEXT("FDusterTabTitle", "Duster"))
 	.SetMenuType(ETabSpawnerMenuType::Hidden);
+
+	FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
+
+	PropertyModule.RegisterCustomClassLayout(UDusterDetails::StaticClass()->GetFName(), FOnGetDetailCustomizationInstance::CreateStatic(&FDusterDetailsCustomization::MakeInstance));
 }
 
 void FDusterModule::ShutdownModule()
@@ -40,6 +46,10 @@ void FDusterModule::ShutdownModule()
 	FDusterCommands::Unregister();
 
 	FGlobalTabmanager::Get()->UnregisterNomadTabSpawner(DusterTabName);
+
+	FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
+
+	PropertyModule.UnregisterCustomClassLayout(UDusterDetails::StaticClass()->GetFName());
 }
 
 void FDusterModule::PluginButtonClicked()
@@ -76,7 +86,7 @@ TSharedRef<SDockTab> FDusterModule::OnSpawnPluginTab(const FSpawnTabArgs& SpawnT
 	return SNew(SDockTab)
 		.TabRole(NomadTab)
 		[
-			SNew(SMainWidget)
+			SNew(SDusterWidget)
 		];
 }
 
