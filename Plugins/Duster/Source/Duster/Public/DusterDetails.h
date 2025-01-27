@@ -4,8 +4,6 @@
 #include "UObject/Object.h"
 #include "DusterDetails.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCustomDetailsSaveSignature);
-
 UCLASS(BlueprintType)
 class DUSTER_API UDusterDetails : public UObject
 {
@@ -14,6 +12,36 @@ class DUSTER_API UDusterDetails : public UObject
 public:
 	UPROPERTY(EditAnywhere)
 	FName Name;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UMaterial> Material;
+
+	UPROPERTY(EditAnywhere)
+	float Height;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UCurveFloat> Falloff;
+
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UTexture> Texture;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UMaterial> Material2;
+
+	UPROPERTY(EditAnywhere)
+	float Density;
+
+	UPROPERTY(EditAnywhere)
+	TSoftObjectPtr<AActor> Actor;
+
+
+	static TArray<bool> Sides;
+	
 	
 	static FReply Save();
+	
+	static FReply Add();
+
+	static void Checkbox(ECheckBoxState State, int side);
 };
