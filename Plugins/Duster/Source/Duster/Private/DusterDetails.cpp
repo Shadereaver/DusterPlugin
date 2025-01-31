@@ -13,6 +13,18 @@ FReply UDusterDetails::Add()
 	return FReply::Handled();
 }
 
+FReply UDusterDetails::Mat()
+{
+	UE_LOG(LogTemp, Display, TEXT("Mat"));
+	return FReply::Handled();
+}
+
+FReply UDusterDetails::Remove()
+{
+	UE_LOG(LogTemp, Display, TEXT("Remove"));
+	return FReply::Handled();
+}
+
 void UDusterDetails::Checkbox(ECheckBoxState State, int side)
 {
 	switch (State)

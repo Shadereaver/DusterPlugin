@@ -41,7 +41,11 @@ public:
 	
 	static FReply Save();
 	
+	static FReply Remove();
+	
 	static FReply Add();
+	
+	static FReply Mat();
 
 	static void Checkbox(ECheckBoxState State, int side);
 };

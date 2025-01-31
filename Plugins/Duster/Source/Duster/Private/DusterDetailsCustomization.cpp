@@ -5,12 +5,14 @@
 #include "DusterDetails.h"
 #include "IDetailGroup.h"
 #include "PropertyCustomizationHelpers.h"
+#include "Widgets/Text/SRichTextBlock.h"
 
 void FDusterDetailsCustomization::CustomizeDetails(IDetailLayoutBuilder& DetailBuilder)
 {
 	IDetailCategoryBuilder& Category3D = DetailBuilder.EditCategory("3D");
 	IDetailGroup& PresetGroup3D = Category3D.AddGroup(TEXT("PresetGroup"), FText::FromString("Preset"));
 	IDetailGroup& SettingsGroup3D = Category3D.AddGroup(TEXT("Settings"), FText::FromString("Settings"));
+	
 	PresetGroup3D.EnableReset(true);
 	SettingsGroup3D.EnableReset(true);
 
@@ -34,6 +36,7 @@ void FDusterDetailsCustomization::CustomizeDetails(IDetailLayoutBuilder& DetailB
 	[
 		SNew(STextBlock)
 		.Text(FText::FromString("Name"))
+		.ToolTipText(FText::FromString("Name of the preset."))
 	]
 	.ValueContent()
 	[
@@ -50,20 +53,42 @@ void FDusterDetailsCustomization::CustomizeDetails(IDetailLayoutBuilder& DetailB
 			.Text(FText::FromString("Save"))
 			.HAlign(HAlign_Right)
 			.OnClicked(FOnClicked::CreateStatic(&UDusterDetails::Save))
+			.ToolTipText(FText::FromString("Save the current settings under the current name."))
+			.ButtonColorAndOpacity(FSlateColor(FLinearColor(0, 5, 224)))
 		]
 	];
 	
-	SettingsGroup3D.AddPropertyRow(DetailBuilder.GetProperty(GET_MEMBER_NAME_CHECKED(UDusterDetails, Material)));
-	SettingsGroup3D.AddPropertyRow(DetailBuilder.GetProperty(GET_MEMBER_NAME_CHECKED(UDusterDetails, Height)));
-	SettingsGroup3D.AddPropertyRow(DetailBuilder.GetProperty(GET_MEMBER_NAME_CHECKED(UDusterDetails, Falloff)));
+	SettingsGroup3D.AddPropertyRow(DetailBuilder.GetProperty(GET_MEMBER_NAME_CHECKED(UDusterDetails, Material)))
+	.GetPropertyHandle()->SetToolTipText(FText::FromString("The material applied to the generated mesh."));
+	SettingsGroup3D.AddPropertyRow(DetailBuilder.GetProperty(GET_MEMBER_NAME_CHECKED(UDusterDetails, Height)))
+	.GetPropertyHandle()->SetToolTipText(FText::FromString("The distance from the base mesh surface to the top of the generated mesh."));
+	SettingsGroup3D.AddPropertyRow(DetailBuilder.GetProperty(GET_MEMBER_NAME_CHECKED(UDusterDetails, Falloff)))
+	.GetPropertyHandle()->SetToolTipText(FText::FromString("The slope from the bottom to the top of the generated mesh."));
 
 	SettingsGroup3D.AddWidgetRow()
 	.ValueContent()
 	[
-		SNew(SButton)
-		.Text(FText::FromString("Add"))
-		.HAlign(HAlign_Center)
-		.OnClicked(FOnClicked::CreateStatic(&UDusterDetails::Add))
+		SNew(SHorizontalBox)
+		+SHorizontalBox::Slot()
+		.AutoWidth()
+		[
+			SNew(SButton)
+			.Text(FText::FromString(TEXT("Add")))
+			.HAlign(HAlign_Center)
+			.OnClicked(FOnClicked::CreateStatic(&UDusterDetails::Add))
+			.ToolTipText(FText::FromString("Add a mesh to selected actors."))
+			
+		]
+		+SHorizontalBox::Slot()
+		.AutoWidth()
+		[
+			SNew(SButton)
+			.Text(FText::FromString("Remove"))
+			.HAlign(HAlign_Center)
+			.OnClicked(FOnClicked::CreateStatic(&UDusterDetails::Remove))
+			.ToolTipText(FText::FromString("Remove generated mesh from selected actors."))
+			.ButtonColorAndOpacity(FSlateColor(FLinearColor(255, 0 , 0)))
+		]
 	];
 
 	IDetailCategoryBuilder& Category2D = DetailBuilder.EditCategory("2D");
@@ -90,6 +115,7 @@ void FDusterDetailsCustomization::CustomizeDetails(IDetailLayoutBuilder& DetailB
 	[
 		SNew(STextBlock)
 		.Text(FText::FromString("Name"))
+		.ToolTipText(FText::FromString("Name of the preset."))
 	]
 	.ValueContent()
 	[
@@ -106,17 +132,34 @@ void FDusterDetailsCustomization::CustomizeDetails(IDetailLayoutBuilder& DetailB
 			.Text(FText::FromString("Save"))
 			.HAlign(HAlign_Right)
 			.OnClicked(FOnClicked::CreateStatic(&UDusterDetails::Save))
+			.ToolTipText(FText::FromString("Save the current settings under the current name."))
+			.ButtonColorAndOpacity(FSlateColor(FLinearColor(0, 5, 224)))
 		]
 	];
 
-	SettingsGroup2D.AddPropertyRow(DetailBuilder.GetProperty(GET_MEMBER_NAME_CHECKED(UDusterDetails, Texture)));
-	SettingsGroup2D.AddPropertyRow(DetailBuilder.GetProperty(GET_MEMBER_NAME_CHECKED(UDusterDetails, Material2)));
-	SettingsGroup2D.AddPropertyRow(DetailBuilder.GetProperty(GET_MEMBER_NAME_CHECKED(UDusterDetails, Density)));
+	SettingsGroup2D.AddPropertyRow(DetailBuilder.GetProperty(GET_MEMBER_NAME_CHECKED(UDusterDetails, Texture)))
+	.GetPropertyHandle()->SetToolTipText(FText::FromString("The texture to use."));
+	SettingsGroup2D.AddPropertyRow(DetailBuilder.GetProperty(GET_MEMBER_NAME_CHECKED(UDusterDetails, Material2)))
+	.GetPropertyHandle()->SetToolTipText(FText::FromString("The material to use."));
+
+	SettingsGroup2D.AddWidgetRow()
+	.ValueContent()
+	[
+		SNew(SButton)
+		.Text(FText::FromString("Create material"))
+		.HAlign(HAlign_Right)
+		.OnClicked(FOnClicked::CreateStatic(&UDusterDetails::Mat))
+		.ToolTipText(FText::FromString("Create a new material with the required parameters."))
+	];
+	
+	SettingsGroup2D.AddPropertyRow(DetailBuilder.GetProperty(GET_MEMBER_NAME_CHECKED(UDusterDetails, Density)))
+	.GetPropertyHandle()->SetToolTipText(FText::FromString("The density of coverage."));
 
 	PresetGroup2D.EnableReset(true);
 	SettingsGroup2D.EnableReset(true);
 
-	SettingsGroup2D.AddPropertyRow(DetailBuilder.GetProperty(GET_MEMBER_NAME_CHECKED(UDusterDetails, Actor)));
+	IDetailPropertyRow& ActorPointAt = SettingsGroup2D.AddPropertyRow(DetailBuilder.GetProperty(GET_MEMBER_NAME_CHECKED(UDusterDetails, Actor)));
+	ActorPointAt.ToolTip(FText::FromString("The Actor the dust will point at."));
 
 	for (int i = 0; i < 6; i++)
 	{
