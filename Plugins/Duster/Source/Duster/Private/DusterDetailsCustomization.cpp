@@ -94,6 +94,9 @@ void FDusterDetailsCustomization::CustomizeDetails(IDetailLayoutBuilder& DetailB
 	IDetailCategoryBuilder& Category2D = DetailBuilder.EditCategory("2D");
 	IDetailGroup& PresetGroup2D = Category2D.AddGroup(TEXT("PresetGroup"), FText::FromString("Preset"));
 	IDetailGroup& SettingsGroup2D = Category2D.AddGroup(TEXT("Settings"), FText::FromString("Settings"));
+	
+	PresetGroup2D.EnableReset(true);
+	SettingsGroup2D.EnableReset(true);
 
 	PresetGroup2D.AddWidgetRow()
 	.NameContent()
@@ -155,28 +158,105 @@ void FDusterDetailsCustomization::CustomizeDetails(IDetailLayoutBuilder& DetailB
 	SettingsGroup2D.AddPropertyRow(DetailBuilder.GetProperty(GET_MEMBER_NAME_CHECKED(UDusterDetails, Density)))
 	.GetPropertyHandle()->SetToolTipText(FText::FromString("The density of coverage."));
 
-	PresetGroup2D.EnableReset(true);
-	SettingsGroup2D.EnableReset(true);
+	const FSimpleDelegate OnValueChanged = FSimpleDelegate::CreateLambda([&DetailBuilder]()
+	{
+		DetailBuilder.ForceRefreshDetails();
+	});
+	
+	IDetailPropertyRow& Sided = SettingsGroup2D.AddPropertyRow(DetailBuilder.GetProperty(GET_MEMBER_NAME_CHECKED(UDusterDetails, bPointAt)));
+	Sided.ToolTip(FText::FromString("Toggle between individual side control or a single decal pointing at an actor."));
+	Sided.DisplayName(FText::FromString("Sided"));
+	Sided.GetPropertyHandle()->SetOnPropertyValueChanged(OnValueChanged);
 
+	bool bSided;
+	Sided.GetPropertyHandle()->GetValue(bSided);
+	
 	IDetailPropertyRow& ActorPointAt = SettingsGroup2D.AddPropertyRow(DetailBuilder.GetProperty(GET_MEMBER_NAME_CHECKED(UDusterDetails, Actor)));
 	ActorPointAt.ToolTip(FText::FromString("The Actor the dust will point at."));
-
-	for (int i = 0; i < 6; i++)
+	ActorPointAt.IsEnabled(!bSided);
+	
+	if (bSided)
 	{
-		IDetailGroup& SubGroup = SettingsGroup2D.AddGroup(*FString::Printf(TEXT("Side %d"), i), FText::FromString(FString::Printf(TEXT("Side %d"), i)));
-		SubGroup.AddWidgetRow()
-		.NameContent()
-		[
-			SNew(STextBlock)
-			.Text(FText::FromString("Point to actor override"))
-		]
-		.ValueContent()
-		[
-			SNew(SCheckBox)
-			.OnCheckStateChanged(FOnCheckStateChanged::CreateStatic(&UDusterDetails::Checkbox, i))
-		];
-		SubGroup.AddPropertyRow(DetailBuilder.GetProperty(GET_MEMBER_NAME_CHECKED(UDusterDetails, Actor))).DisplayName(FText::FromString("Override Actor"));
-		SubGroup.AddPropertyRow(DetailBuilder.GetProperty(GET_MEMBER_NAME_CHECKED(UDusterDetails, Density))).DisplayName(FText::FromString("Override Density"));
+		for (int i = 0; i < 6; i++)
+		{
+			IDetailGroup& SubGroup = SettingsGroup2D.AddGroup(*FString::Printf(TEXT("Side %d"), i), FText::FromString(FString::Printf(TEXT("Side %d"), i)));
+			
+			IDetailPropertyRow& ActorOverride = SubGroup.AddPropertyRow(DetailBuilder.GetProperty(GET_MEMBER_NAME_CHECKED(UDusterDetails, Actor)));
+			ActorOverride.DisplayName(FText::FromString("Point to actor"));
+			ActorOverride.ToolTip(FText::FromString("Point the decal at the give actor for this face"));
+			
+			bool bEditActor;
+			ActorOverride.EditCondition(bEditActor, FOnBooleanValueChanged::CreateLambda([&bEditActor, &DetailBuilder](bool Edit)
+			{
+				bEditActor = Edit;
+				DetailBuilder.ForceRefreshDetails();
+			}));
+			
+			IDetailPropertyRow& DensityOverride = SubGroup.AddPropertyRow(DetailBuilder.GetProperty(GET_MEMBER_NAME_CHECKED(UDusterDetails, OverrideDensity)));
+			DensityOverride.DisplayName(FText::FromString("Override Density"));
+			DensityOverride.ToolTip(FText::FromString("Override the density for this face"));
+
+			bool bEditDensity;
+			DensityOverride.EditCondition(bEditDensity, FOnBooleanValueChanged::CreateLambda([&bEditDensity, &DetailBuilder](bool Edit)
+			{
+				bEditDensity = Edit;
+				DetailBuilder.ForceRefreshDetails();
+			}));
+
+			SubGroup.AddWidgetRow()
+			.ValueContent()
+			[
+				SNew(SHorizontalBox)
+				+SHorizontalBox::Slot()
+				.AutoWidth()
+				[
+					SNew(SButton)
+					.Text(FText::FromString(TEXT("Add")))
+					.HAlign(HAlign_Center)
+					.OnClicked(FOnClicked::CreateStatic(&UDusterDetails::Add))
+					.ToolTipText(FText::FromString("Add a Decal to selected actors."))
+					
+				]
+				+SHorizontalBox::Slot()
+				.AutoWidth()
+				[
+					SNew(SButton)
+					.Text(FText::FromString("Remove"))
+					.HAlign(HAlign_Center)
+					.OnClicked(FOnClicked::CreateStatic(&UDusterDetails::Remove))
+					.ToolTipText(FText::FromString("Remove Decal from selected actors."))
+					.ButtonColorAndOpacity(FSlateColor(FLinearColor(255, 0 , 0)))
+				]
+			];
+		}
+	}
+	else
+	{
+		SettingsGroup2D.AddWidgetRow()
+			.ValueContent()
+			[
+				SNew(SHorizontalBox)
+				+SHorizontalBox::Slot()
+				.AutoWidth()
+				[
+					SNew(SButton)
+					.Text(FText::FromString(TEXT("Add")))
+					.HAlign(HAlign_Center)
+					.OnClicked(FOnClicked::CreateStatic(&UDusterDetails::Add))
+					.ToolTipText(FText::FromString("Add a Decal to selected actors."))
+					
+				]
+				+SHorizontalBox::Slot()
+				.AutoWidth()
+				[
+					SNew(SButton)
+					.Text(FText::FromString("Remove"))
+					.HAlign(HAlign_Center)
+					.OnClicked(FOnClicked::CreateStatic(&UDusterDetails::Remove))
+					.ToolTipText(FText::FromString("Remove Decal from selected actors."))
+					.ButtonColorAndOpacity(FSlateColor(FLinearColor(255, 0 , 0)))
+				]
+			];
 	}
 }
 

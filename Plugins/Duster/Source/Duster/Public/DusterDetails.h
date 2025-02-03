@@ -35,7 +35,12 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSoftObjectPtr<AActor> Actor;
 
+	UPROPERTY(EditAnywhere)
+	bool bPointAt = false;
 
+	UPROPERTY(EditAnywhere)
+	float OverrideDensity;
+	
 	static TArray<bool> Sides;
 	
 	
