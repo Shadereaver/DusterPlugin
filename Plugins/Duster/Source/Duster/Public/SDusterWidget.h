@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "Widgets/SCompoundWidget.h"
 
-class UDusterDetails;
+class UDusterControl;
 
 class DUSTER_API SDusterWidget : public SCompoundWidget
 {
@@ -15,8 +15,7 @@ public:
 	SDusterWidget() : CommandList(new FUICommandList){}
 
 	void Construct(const FArguments& InArgs);
-
-	UDusterDetails* CustomDetails;
+	
 	TSharedPtr<class IDetailsView> PropertyWidget;
 protected:
 	TSharedRef<FUICommandList> CommandList;

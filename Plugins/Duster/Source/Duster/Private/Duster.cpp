@@ -1,8 +1,10 @@
 #include "Duster.h"
 #include "DusterStyle.h"
 #include "DusterCommands.h"
-#include "DusterDetails.h"
+#include "DusterControl.h"
 #include "DusterDetailsCustomization.h"
+#include "DusterInfo2DCustomisation.h"
+#include "DusterInfo3DCustomisation.h"
 #include "SDusterWidget.h"
 #include "Widgets/Docking/SDockTab.h"
 #include "Widgets/Layout/SBox.h"
@@ -32,7 +34,10 @@ void FDusterModule::StartupModule()
 
 	FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
 
-	PropertyModule.RegisterCustomClassLayout(UDusterDetails::StaticClass()->GetFName(), FOnGetDetailCustomizationInstance::CreateStatic(&FDusterDetailsCustomization::MakeInstance));
+	PropertyModule.RegisterCustomClassLayout(UDusterControl::StaticClass()->GetFName(), FOnGetDetailCustomizationInstance::CreateStatic(&FDusterDetailsCustomization::MakeInstance));
+
+	PropertyModule.RegisterCustomPropertyTypeLayout(FLocalDusterInfo3D::StaticStruct()->GetFName(), FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FDusterInfo3DCustomisation::MakeInstance));
+	PropertyModule.RegisterCustomPropertyTypeLayout(FLocalDusterInfo2D::StaticStruct()->GetFName(), FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FDusterInfo2DCustomisation::MakeInstance));
 }
 
 void FDusterModule::ShutdownModule()
@@ -49,7 +54,10 @@ void FDusterModule::ShutdownModule()
 
 	FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
 
-	PropertyModule.UnregisterCustomClassLayout(UDusterDetails::StaticClass()->GetFName());
+	PropertyModule.UnregisterCustomClassLayout(UDusterControl::StaticClass()->GetFName());
+
+	PropertyModule.UnregisterCustomPropertyTypeLayout(FLocalDusterInfo3D::StaticStruct()->GetFName());
+	PropertyModule.UnregisterCustomPropertyTypeLayout(FLocalDusterInfo2D::StaticStruct()->GetFName());
 }
 
 void FDusterModule::PluginButtonClicked()

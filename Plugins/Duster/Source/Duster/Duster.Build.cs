@@ -25,7 +25,7 @@ public class Duster : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core",
+				"Core", 
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -44,6 +44,8 @@ public class Duster : ModuleRules
 				"Slate",
 				"SlateCore",
 				"PropertyEditor",
+				"Blutility",
+				"EditorSubsystem",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

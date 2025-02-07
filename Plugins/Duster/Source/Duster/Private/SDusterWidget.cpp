@@ -1,6 +1,7 @@
 #include "SDusterWidget.h"
 
-#include "DusterDetails.h"
+#include "DusterControl.h"
+#include "DusterSubsystem.h"
 #include "SlateOptMacros.h"
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
@@ -14,9 +15,9 @@ void SDusterWidget::Construct(const FArguments& InArgs)
 	Args.bHideSelectionTip = true;
 
 	PropertyWidget = PropertyModule.CreateDetailView(Args);
-
-	PropertyWidget->SetObject(GetMutableDefault<UDusterDetails>());
-
+	
+	PropertyWidget->SetObject(GEditor->GetEditorSubsystem<UDusterSubsystem>()->GetDusterControl().Get());
+	
 	ChildSlot
 	[
 		PropertyWidget.ToSharedRef()
