@@ -2,7 +2,7 @@
 #include "CoreMinimal.h"
 #include "IDetailCustomization.h"
 
-class UDusterDetails;
+class UDusterControl;
 
 class FDusterDetailsCustomization : public IDetailCustomization
 {

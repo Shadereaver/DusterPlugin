@@ -16,7 +16,7 @@ void SDusterWidget::Construct(const FArguments& InArgs)
 
 	PropertyWidget = PropertyModule.CreateDetailView(Args);
 	
-	PropertyWidget->SetObject(GEditor->GetEditorSubsystem<UDusterSubsystem>()->GetDusterControl().Get());
+	PropertyWidget->SetObject(GEditor->GetEditorSubsystem<UDusterSubsystem>()->GetDusterControl());
 	
 	ChildSlot
 	[

@@ -16,7 +16,7 @@ void FDusterInfo3DCustomisation::CustomizeChildren(TSharedRef<IPropertyHandle> P
 	if (!PropertyHandle->IsValidHandle())
 		return;
 
-	TSharedRef<UDusterControl> DusterControl = GEditor->GetEditorSubsystem<UDusterSubsystem>()->GetDusterControl().ToSharedRef();
+	TObjectPtr<UDusterControl> DusterControl = GEditor->GetEditorSubsystem<UDusterSubsystem>()->GetDusterControl();
 	
 	ChildBuilder.AddProperty(PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FLocalDusterInfo3D, Material)).ToSharedRef())
 	.GetPropertyHandle()->SetToolTipText(FText::FromString("The material applied to the generated mesh."));
@@ -35,7 +35,7 @@ void FDusterInfo3DCustomisation::CustomizeChildren(TSharedRef<IPropertyHandle> P
 			SNew(SButton)
 			.Text(FText::FromString(TEXT("Add")))
 			.HAlign(HAlign_Center)
-			.OnClicked(DusterControl, &UDusterControl::Add3D)
+			.OnClicked(FOnClicked::CreateUObject(DusterControl, &UDusterControl::Add3D))
 			.ToolTipText(FText::FromString("Add a mesh to selected actors."))
 			
 		]
@@ -45,7 +45,7 @@ void FDusterInfo3DCustomisation::CustomizeChildren(TSharedRef<IPropertyHandle> P
 			SNew(SButton)
 			.Text(FText::FromString("Remove"))
 			.HAlign(HAlign_Center)
-			.OnClicked(DusterControl, &UDusterControl::Remove3D)
+			.OnClicked(FOnClicked::CreateUObject(DusterControl, &UDusterControl::Remove3D))
 			.ToolTipText(FText::FromString("Remove generated mesh from selected actors."))
 			.ButtonColorAndOpacity(FSlateColor(FLinearColor(255, 0 , 0)))
 		]

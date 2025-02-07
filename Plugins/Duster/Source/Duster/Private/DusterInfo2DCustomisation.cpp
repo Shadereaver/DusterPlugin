@@ -1,21 +1,28 @@
 #include "DusterInfo2DCustomisation.h"
 
+#include "DetailLayoutBuilder.h"
 #include "DetailWidgetRow.h"
 #include "DusterControl.h"
+#include "DusterInfo2D.h"
+#include "DusterSubsystem.h"
 #include "IDetailChildrenBuilder.h"
+#include "IDetailGroup.h"
 
 void FDusterInfo2DCustomisation::CustomizeHeader(TSharedRef<IPropertyHandle> PropertyHandle,
-	FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& CustomizationUtils)
+                                                 FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& CustomizationUtils)
 {
 }
 
 void FDusterInfo2DCustomisation::CustomizeChildren(TSharedRef<IPropertyHandle> PropertyHandle,
 	IDetailChildrenBuilder& ChildBuilder, IPropertyTypeCustomizationUtils& CustomizationUtils)
 {
+	TObjectPtr<UDusterControl> DusterControl = GEditor->GetEditorSubsystem<UDusterSubsystem>()->GetDusterControl();
+
+	
 	ChildBuilder.AddProperty(PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FLocalDusterInfo2D, Texture)).ToSharedRef())
-	.GetPropertyHandle()->SetToolTipText(FText::FromString("The texture to use."));
+	.GetPropertyHandle()->SetToolTipText(FText::FromString("The texture to use for the decal."));
 	ChildBuilder.AddProperty(PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FLocalDusterInfo2D, Material)).ToSharedRef())
-	.GetPropertyHandle()->SetToolTipText(FText::FromString("The material to use."));
+	.GetPropertyHandle()->SetToolTipText(FText::FromString("The material to use for the decal."));
 
 	ChildBuilder.AddCustomRow(FText::FromString("2D Create material"))
 	.ValueContent()
@@ -23,19 +30,22 @@ void FDusterInfo2DCustomisation::CustomizeChildren(TSharedRef<IPropertyHandle> P
 		SNew(SButton)
 		.Text(FText::FromString("Create material"))
 		.HAlign(HAlign_Right)
-		//.OnClicked(FOnClicked::CreateStatic(&UDusterDetails::Mat))
+		.OnClicked(FOnClicked::CreateUObject(DusterControl, &UDusterControl::Create2DMaterial))
 		.ToolTipText(FText::FromString("Create a new material with the required parameters."))
 	];
 	
 	ChildBuilder.AddProperty(PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FLocalDusterInfo2D, Density)).ToSharedRef())
 	.GetPropertyHandle()->SetToolTipText(FText::FromString("The density of coverage."));
-	/*
-	const FSimpleDelegate OnValueChanged = FSimpleDelegate::CreateLambda([&DetailBuilder]()
+
+	IDetailLayoutBuilder& LayoutBuilder = ChildBuilder.GetParentCategory().GetParentLayout();
+
+	const FSimpleDelegate OnValueChanged = FSimpleDelegate::CreateLambda([&LayoutBuilder]()
 	{
-		DetailBuilder.ForceRefreshDetails();
+		LayoutBuilder.ForceRefreshDetails();
 	});
 	
-	IDetailPropertyRow& Sided = SettingsGroup2D.AddPropertyRow(DetailBuilder.GetProperty(GET_MEMBER_NAME_CHECKED(UDusterDetails, bPointAt)));
+	
+	IDetailPropertyRow& Sided = ChildBuilder.AddProperty(PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FLocalDusterInfo2D, bSided)).ToSharedRef());
 	Sided.ToolTip(FText::FromString("Toggle between individual side control or a single decal pointing at an actor."));
 	Sided.DisplayName(FText::FromString("Sided"));
 	Sided.GetPropertyHandle()->SetOnPropertyValueChanged(OnValueChanged);
@@ -43,7 +53,7 @@ void FDusterInfo2DCustomisation::CustomizeChildren(TSharedRef<IPropertyHandle> P
 	bool bSided;
 	Sided.GetPropertyHandle()->GetValue(bSided);
 	
-	IDetailPropertyRow& ActorPointAt = SettingsGroup2D.AddPropertyRow(DetailBuilder.GetProperty(GET_MEMBER_NAME_CHECKED(UDusterDetails, Actor)));
+	IDetailPropertyRow& ActorPointAt = ChildBuilder.AddProperty(PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FLocalDusterInfo2D, ActorToPointAt)).ToSharedRef());
 	ActorPointAt.ToolTip(FText::FromString("The Actor the dust will point at."));
 	ActorPointAt.IsEnabled(!bSided);
 	
@@ -51,28 +61,33 @@ void FDusterInfo2DCustomisation::CustomizeChildren(TSharedRef<IPropertyHandle> P
 	{
 		for (int i = 0; i < 6; i++)
 		{
-			IDetailGroup& SubGroup = SettingsGroup2D.AddGroup(*FString::Printf(TEXT("Side %d"), i), FText::FromString(FString::Printf(TEXT("Side %d"), i)));
+			IDetailGroup& SubGroup = ChildBuilder.AddGroup(*FString::Printf(TEXT("Side %d"), i), FText::FromString(FString::Printf(TEXT("Side %d"), i)));
+
 			
-			IDetailPropertyRow& ActorOverride = SubGroup.AddPropertyRow(DetailBuilder.GetProperty(GET_MEMBER_NAME_CHECKED(UDusterDetails, Actor)));
+			IDetailPropertyRow& ActorOverride = SubGroup.AddPropertyRow(PropertyHandle->GetChildHandle(*FString::Printf(TEXT("Sides[%d].ActorToPointAt"), i)).ToSharedRef());
 			ActorOverride.DisplayName(FText::FromString("Point to actor"));
 			ActorOverride.ToolTip(FText::FromString("Point the decal at the give actor for this face"));
 			
-			bool bEditActor;
-			ActorOverride.EditCondition(bEditActor, FOnBooleanValueChanged::CreateLambda([&bEditActor, &DetailBuilder](bool Edit)
+			TSharedPtr<IPropertyHandle> OverrideActor = PropertyHandle->GetChildHandle(*FString::Printf(TEXT("Sides[%d].bOverrideActor"), i));
+			bool bOverrideActor;
+			OverrideActor->GetValue(bOverrideActor);
+			
+			ActorOverride.EditCondition(bOverrideActor, FOnBooleanValueChanged::CreateLambda([&bOverrideActor](bool Edit)
 			{
-				bEditActor = Edit;
-				DetailBuilder.ForceRefreshDetails();
+				bOverrideActor = Edit;
 			}));
 			
-			IDetailPropertyRow& DensityOverride = SubGroup.AddPropertyRow(DetailBuilder.GetProperty(GET_MEMBER_NAME_CHECKED(UDusterDetails, OverrideDensity)));
+			IDetailPropertyRow& DensityOverride = SubGroup.AddPropertyRow(PropertyHandle->GetChildHandle(*FString::Printf(TEXT("Sides[%d].DensityOverride"), i)).ToSharedRef());
 			DensityOverride.DisplayName(FText::FromString("Override Density"));
 			DensityOverride.ToolTip(FText::FromString("Override the density for this face"));
 
-			bool bEditDensity;
-			DensityOverride.EditCondition(bEditDensity, FOnBooleanValueChanged::CreateLambda([&bEditDensity, &DetailBuilder](bool Edit)
+			TSharedPtr<IPropertyHandle> OverrideDensity = PropertyHandle->GetChildHandle(*FString::Printf(TEXT("Sides[%d].bOverrideDensity"), i));
+			bool bOverrideDensity;
+			OverrideDensity->GetValue(bOverrideDensity);
+			
+			DensityOverride.EditCondition(bOverrideDensity, FOnBooleanValueChanged::CreateLambda([&bOverrideDensity](bool Edit)
 			{
-				bEditDensity = Edit;
-				DetailBuilder.ForceRefreshDetails();
+				bOverrideDensity = Edit;
 			}));
 
 			SubGroup.AddWidgetRow()
@@ -85,7 +100,7 @@ void FDusterInfo2DCustomisation::CustomizeChildren(TSharedRef<IPropertyHandle> P
 					SNew(SButton)
 					.Text(FText::FromString(TEXT("Add")))
 					.HAlign(HAlign_Center)
-					.OnClicked(FOnClicked::CreateStatic(&UDusterDetails::Add))
+					//.OnClicked(FOnClicked::CreateUObject(DusterControl)
 					.ToolTipText(FText::FromString("Add a Decal to selected actors."))
 					
 				]
@@ -95,7 +110,7 @@ void FDusterInfo2DCustomisation::CustomizeChildren(TSharedRef<IPropertyHandle> P
 					SNew(SButton)
 					.Text(FText::FromString("Remove"))
 					.HAlign(HAlign_Center)
-					.OnClicked(FOnClicked::CreateStatic(&UDusterDetails::Remove))
+					//.OnClicked(FOnClicked::CreateStatic(&UDusterDetails::Remove))
 					.ToolTipText(FText::FromString("Remove Decal from selected actors."))
 					.ButtonColorAndOpacity(FSlateColor(FLinearColor(255, 0 , 0)))
 				]
@@ -104,7 +119,7 @@ void FDusterInfo2DCustomisation::CustomizeChildren(TSharedRef<IPropertyHandle> P
 	}
 	else
 	{
-		SettingsGroup2D.AddWidgetRow()
+		ChildBuilder.AddCustomRow(FText::FromString("2D Controls"))
 			.ValueContent()
 			[
 				SNew(SHorizontalBox)
@@ -114,7 +129,7 @@ void FDusterInfo2DCustomisation::CustomizeChildren(TSharedRef<IPropertyHandle> P
 					SNew(SButton)
 					.Text(FText::FromString(TEXT("Add")))
 					.HAlign(HAlign_Center)
-					.OnClicked(FOnClicked::CreateStatic(&UDusterDetails::Add))
+					//.OnClicked(FOnClicked::CreateUObject(DusterControl, &UDusterDetails::Add))
 					.ToolTipText(FText::FromString("Add a Decal to selected actors."))
 					
 				]
@@ -124,13 +139,12 @@ void FDusterInfo2DCustomisation::CustomizeChildren(TSharedRef<IPropertyHandle> P
 					SNew(SButton)
 					.Text(FText::FromString("Remove"))
 					.HAlign(HAlign_Center)
-					.OnClicked(FOnClicked::CreateStatic(&UDusterDetails::Remove))
+					//.OnClicked(FOnClicked::CreateStatic(&UDusterDetails::Remove))
 					.ToolTipText(FText::FromString("Remove Decal from selected actors."))
 					.ButtonColorAndOpacity(FSlateColor(FLinearColor(255, 0 , 0)))
 				]
 			];
 	}
-	*/
 }
 
 TSharedRef<IPropertyTypeCustomization> FDusterInfo2DCustomisation::MakeInstance()

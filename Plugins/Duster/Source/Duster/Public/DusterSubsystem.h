@@ -13,8 +13,8 @@ public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
 
-	TSharedPtr<UDusterControl>& GetDusterControl();
+	TObjectPtr<UDusterControl>& GetDusterControl();
 
 private:
-	TSharedPtr<UDusterControl> DusterControl;
+	TObjectPtr<UDusterControl> DusterControl;
 };

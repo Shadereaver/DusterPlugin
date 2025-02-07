@@ -10,8 +10,14 @@ struct F2DSides
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere)
+	bool bOverrideActor;
+	
+	UPROPERTY(EditAnywhere)
 	TSoftObjectPtr<AActor> ActorToPointAt;
 
+	UPROPERTY(EditAnywhere)
+	bool bOverrideDensity;
+	
 	UPROPERTY(EditAnywhere)
 	float DensityOverride;
 };
@@ -22,9 +28,6 @@ class DUSTER_API UDusterInfo2D : public UDataAsset
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere)
-	FName Name;
-	
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UTexture> Texture;
 
@@ -39,4 +42,7 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	TArray<F2DSides> Sides;
+
+	UPROPERTY(EditAnywhere)
+	bool bSided;
 };

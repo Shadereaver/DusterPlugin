@@ -2,12 +2,12 @@
 
 void UDusterSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
-	DusterControl = MakeShareable(GetMutableDefault<UDusterControl>());
+	DusterControl = GetMutableDefault<UDusterControl>();
 }
 
 void UDusterSubsystem::Deinitialize() {}
 
-TSharedPtr<UDusterControl>& UDusterSubsystem::GetDusterControl() 
+TObjectPtr<UDusterControl>& UDusterSubsystem::GetDusterControl() 
 {
 	return DusterControl;
 }
