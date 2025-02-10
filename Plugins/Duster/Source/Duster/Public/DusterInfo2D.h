@@ -4,24 +4,6 @@
 #include "Engine/DataAsset.h"
 #include "DusterInfo2D.generated.h"
 
-USTRUCT()
-struct F2DSides
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere)
-	bool bOverrideActor;
-	
-	UPROPERTY(EditAnywhere)
-	TSoftObjectPtr<AActor> ActorToPointAt;
-
-	UPROPERTY(EditAnywhere)
-	bool bOverrideDensity;
-	
-	UPROPERTY(EditAnywhere)
-	float DensityOverride;
-};
-
 UCLASS()
 class DUSTER_API UDusterInfo2D : public UDataAsset
 {
@@ -36,13 +18,4 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	float Density;
-
-	UPROPERTY(EditAnywhere)
-	TSoftObjectPtr<AActor> ActorToPointAt;
-
-	UPROPERTY(EditAnywhere)
-	TArray<F2DSides> Sides;
-
-	UPROPERTY(EditAnywhere)
-	bool bSided;
 };

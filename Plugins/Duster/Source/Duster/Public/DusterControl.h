@@ -1,10 +1,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DusterInfo2D.h"
 #include "EditorUtilityObject.h"
 #include "DusterControl.generated.h"
 
-struct F2DSides;
 class UDusterInfo2D;
 class UDusterInfo3D;
 
@@ -21,6 +21,24 @@ struct FLocalDusterInfo3D
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UCurveFloat> Falloff;
+};
+
+USTRUCT()
+struct F2DSides
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere)
+	bool bOverrideActor;
+	
+	UPROPERTY(EditAnywhere)
+	TSoftObjectPtr<AActor> ActorToPointAt;
+
+	UPROPERTY(EditAnywhere)
+	bool bOverrideDensity;
+	
+	UPROPERTY(EditAnywhere)
+	float DensityOverride;
 };
 
 USTRUCT(BlueprintType)
@@ -41,7 +59,7 @@ struct FLocalDusterInfo2D
 	TSoftObjectPtr<AActor> ActorToPointAt;
 
 	UPROPERTY(EditAnywhere)
-	TArray<F2DSides> Sides;
+	F2DSides Sides[6];
 
 	UPROPERTY(EditAnywhere)
 	bool bSided;
@@ -65,6 +83,9 @@ public:
 	FReply Delete2D();
 	FReply Copy2D();
 	FReply Save2D();
+	FReply Add2D(int Side);
+	FReply Remove2D(int Side);
+	FReply CreateActor();
 
 	void Profile3DChanged();
 	void Profile2DChanged();

@@ -69,6 +69,24 @@ FReply UDusterControl::Save2D()
 	return	FReply::Handled();
 }
 
+FReply UDusterControl::Add2D(int Side)
+{
+	UE_LOG(LogTemp, Display, TEXT("Add2D, %d"), Side);
+	return	FReply::Handled();
+}
+
+FReply UDusterControl::Remove2D(int Side)
+{
+	UE_LOG(LogTemp, Display, TEXT("Remove2D, %d"), Side);
+	return	FReply::Handled();
+}
+
+FReply UDusterControl::CreateActor()
+{
+	UE_LOG(LogTemp, Display, TEXT("CreateActor"));
+	return	FReply::Handled();
+}
+
 void UDusterControl::Profile3DChanged()
 {
 	LocalCurrent3DProfile.Material = Current3DProfile->Material;
@@ -81,8 +99,5 @@ void UDusterControl::Profile2DChanged()
 	LocalCurrent2DProfile.Texture = Current2DProfile->Texture;
 	LocalCurrent2DProfile.Material = Current2DProfile->Material;
 	LocalCurrent2DProfile.Density = Current2DProfile->Density;
-	LocalCurrent2DProfile.bSided = Current2DProfile->bSided;
-	LocalCurrent2DProfile.Sides = Current2DProfile->Sides;
-	LocalCurrent2DProfile.ActorToPointAt = Current2DProfile->ActorToPointAt;
 }
 
