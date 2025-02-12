@@ -23,7 +23,7 @@ struct FLocalDusterInfo3D
 	TObjectPtr<UCurveFloat> Falloff;
 };
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct F2DSides
 {
 	GENERATED_BODY()
