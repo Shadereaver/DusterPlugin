@@ -5,6 +5,7 @@
 #include "EditorUtilityObject.h"
 #include "DusterControl.generated.h"
 
+class UDuster3DComponent;
 class UDusterInfo2D;
 class UDusterInfo3D;
 
@@ -13,14 +14,22 @@ struct FLocalDusterInfo3D
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere)
+	TWeakObjectPtr<UDusterInfo3D> Profile;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UMaterial> Material;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float Height;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UCurveFloat> Falloff;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	int Resolution;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float FalloffMultiplier;
 };
 
 USTRUCT(BlueprintType)
@@ -89,6 +98,13 @@ public:
 
 	void Profile3DChanged();
 	void Profile2DChanged();
+
+	void UpdateLocal3D(const FLocalDusterInfo3D& Local);
+
+	UFUNCTION()
+	void OnSelectionChanged(const UTypedElementSelectionSet* SelectionSet);
+	
+	TArray<TObjectPtr<AActor>> SelectedActors;
 	
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UDusterInfo3D> Current3DProfile;

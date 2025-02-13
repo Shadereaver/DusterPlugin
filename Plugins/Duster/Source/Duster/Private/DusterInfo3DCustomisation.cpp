@@ -24,6 +24,10 @@ void FDusterInfo3DCustomisation::CustomizeChildren(TSharedRef<IPropertyHandle> P
 	.GetPropertyHandle()->SetToolTipText(FText::FromString("The distance from the base mesh surface to the top of the generated mesh."));
 	ChildBuilder.AddProperty(PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FLocalDusterInfo3D, Falloff)).ToSharedRef())
 	.GetPropertyHandle()->SetToolTipText(FText::FromString("The slope from the bottom to the top of the generated mesh."));
+	ChildBuilder.AddProperty(PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FLocalDusterInfo3D, Resolution)).ToSharedRef())
+	.GetPropertyHandle()->SetToolTipText(FText::FromString("The Resolution of the falloff (Higher values have worse performance)."));
+	ChildBuilder.AddProperty(PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FLocalDusterInfo3D, FalloffMultiplier)).ToSharedRef())
+	.GetPropertyHandle()->SetToolTipText(FText::FromString("Multiplies the strength of the falloff."));
 
 	ChildBuilder.AddCustomRow(FText::FromString("3D Controls"))
 	.ValueContent()

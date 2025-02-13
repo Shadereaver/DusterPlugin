@@ -11,9 +11,6 @@ class DUSTER_API UDusterInfo3D : public UDataAsset
 	
 public:
 	UPROPERTY(EditAnywhere)
-	FName Name;
-
-	UPROPERTY(EditAnywhere)
 	TObjectPtr<UMaterial> Material;
 
 	UPROPERTY(EditAnywhere)
@@ -21,4 +18,10 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UCurveFloat> Falloff;
+
+	UPROPERTY(EditAnywhere)
+	float FalloffMultiplier;
+
+	UPROPERTY(EditAnywhere)
+	int Resolution;
 };

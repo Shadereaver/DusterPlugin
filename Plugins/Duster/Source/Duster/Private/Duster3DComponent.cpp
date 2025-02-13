@@ -36,3 +36,13 @@ void UDuster3DComponent::SaveAsset(FString PackageName, UObject* Object)
 	Objects.Add(Object);
 	ContentBrowserModule.Get().SyncBrowserToAssets(Objects);
 }
+
+UStaticMeshComponent* UDuster3DComponent::CreateMeshComponent(AActor* Actor, UStaticMeshComponent* OriginalMeshComponent)
+{
+	UStaticMeshComponent* GeneratedMeshComponent = NewObject<UStaticMeshComponent>(Actor);
+	Actor->AddInstanceComponent(GeneratedMeshComponent);
+	GeneratedMeshComponent->RegisterComponent();
+	GeneratedMeshComponent->AttachToComponent(OriginalMeshComponent, FAttachmentTransformRules::SnapToTargetIncludingScale);
+	GEditor->NoteSelectionChange();
+	return GeneratedMeshComponent;
+}

@@ -46,6 +46,8 @@ public class Duster : ModuleRules
 				"PropertyEditor",
 				"Blutility",
 				"EditorSubsystem",
+				"LevelEditor",
+				"TypedElementRuntime",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
