@@ -48,6 +48,10 @@ public class Duster : ModuleRules
 				"EditorSubsystem",
 				"LevelEditor",
 				"TypedElementRuntime",
+				"GeometryCore",
+				"DynamicMesh",
+				"GeometryScriptingCore",
+				"GeometryFramework",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
