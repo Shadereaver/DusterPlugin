@@ -20,5 +20,19 @@
 			"Type": "Editor",
 			"LoadingPhase": "Default"
 		}
+	],
+	"Plugins": [
+		{
+			"Name" : "GeometryProcessing",
+			"Enabled" : true
+		},
+		{
+			"Name" : "GeometryScripting",
+			"Enabled" : true
+		},
+		{
+			"Name" : "EditorScriptingUtilities",
+			"Enabled" : true
+		}
 	]
 }

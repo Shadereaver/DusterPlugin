@@ -15,6 +15,8 @@ FReply UDusterControl::Add3D()
 			UDuster3DComponent* Component3D = NewObject<UDuster3DComponent>(Actor);
 			Actor->AddInstanceComponent(Component3D);
 			GEditor->NoteSelectionChange();
+			Component3D->LocalDusterInfo3D = LocalCurrent3DProfile;
+			Component3D->CreateMesh_Implementation();
 		}
 	}
 	return	FReply::Handled();
@@ -26,6 +28,7 @@ FReply UDusterControl::Remove3D()
 	{
 		if (UDuster3DComponent* Component3D = Actor->FindComponentByClass<UDuster3DComponent>())
 		{
+			Component3D->Delete();
 			Actor->RemoveInstanceComponent(Component3D);
 			GEditor->NoteSelectionChange();
 		}

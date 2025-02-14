@@ -13,6 +13,8 @@ class DUSTER_API UDuster3DComponent : public UEditorUtilityActorComponent
 	virtual bool IsEditorOnly() const override;
 	
 public:
+	void Delete();
+	
 	UFUNCTION(BlueprintNativeEvent, CallInEditor)
 	void CreateMesh();
 	
@@ -31,6 +33,9 @@ public:
 	FLocalDusterInfo3D Settings;
 	
 private:
-	TObjectPtr<UStaticMeshComponent> OriginalMesh;
-
+	TObjectPtr<UStaticMeshComponent> OriginalMeshComponent;
+	TObjectPtr<UStaticMeshComponent> GeneratedMeshComponent;
+	TObjectPtr<UStaticMesh> GeneratedMesh;
+	
+	FString GeneratedMeshName;
 };

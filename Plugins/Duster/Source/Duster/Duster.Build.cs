@@ -52,6 +52,8 @@ public class Duster : ModuleRules
 				"DynamicMesh",
 				"GeometryScriptingCore",
 				"GeometryFramework",
+				"EditorScriptingUtilities",
+				"GeometryScriptingEditor",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
