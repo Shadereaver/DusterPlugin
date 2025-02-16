@@ -19,10 +19,13 @@ void FDusterInfo2DCustomisation::CustomizeChildren(TSharedRef<IPropertyHandle> P
 	TObjectPtr<UDusterControl> DusterControl = GEditor->GetEditorSubsystem<UDusterSubsystem>()->GetDusterControl();
 
 	
-	ChildBuilder.AddProperty(PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FLocalDusterInfo2D, Texture)).ToSharedRef())
-	.GetPropertyHandle()->SetToolTipText(FText::FromString("The texture to use for the decal."));
-	ChildBuilder.AddProperty(PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FLocalDusterInfo2D, Material)).ToSharedRef())
-	.GetPropertyHandle()->SetToolTipText(FText::FromString("The material to use for the decal."));
+	IDetailPropertyRow& Texture = ChildBuilder.AddProperty(PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FLocalDusterInfo2D, Texture)).ToSharedRef());
+	Texture.GetPropertyHandle()->SetToolTipText(FText::FromString("The texture to use for the decal."));
+	Texture.GetPropertyHandle()->SetOnPropertyValueChanged(FSimpleDelegate::CreateUObject(DusterControl, &UDusterControl::Update2D));
+	
+	IDetailPropertyRow& Material = ChildBuilder.AddProperty(PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FLocalDusterInfo2D, Material)).ToSharedRef());
+	Material.GetPropertyHandle()->SetToolTipText(FText::FromString("The material to use for the decal."));
+	Material.GetPropertyHandle()->SetOnPropertyValueChanged(FSimpleDelegate::CreateUObject(DusterControl, &UDusterControl::Update2D));
 
 	ChildBuilder.AddCustomRow(FText::FromString("2D Create material"))
 	.ValueContent()
@@ -34,8 +37,9 @@ void FDusterInfo2DCustomisation::CustomizeChildren(TSharedRef<IPropertyHandle> P
 		.ToolTipText(FText::FromString("Create a new material with the required parameters."))
 	];
 	
-	ChildBuilder.AddProperty(PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FLocalDusterInfo2D, Density)).ToSharedRef())
-	.GetPropertyHandle()->SetToolTipText(FText::FromString("The density of coverage."));
+	IDetailPropertyRow& Density = ChildBuilder.AddProperty(PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FLocalDusterInfo2D, Density)).ToSharedRef());
+	Density.GetPropertyHandle()->SetToolTipText(FText::FromString("The density of coverage."));
+	Density.GetPropertyHandle()->SetOnPropertyValueChanged(FSimpleDelegate::CreateUObject(DusterControl, &UDusterControl::Update2D));
 
 	IDetailLayoutBuilder& LayoutBuilder = ChildBuilder.GetParentCategory().GetParentLayout();
 
@@ -56,6 +60,8 @@ void FDusterInfo2DCustomisation::CustomizeChildren(TSharedRef<IPropertyHandle> P
 	IDetailPropertyRow& ActorPointAt = ChildBuilder.AddProperty(PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FLocalDusterInfo2D, ActorToPointAt)).ToSharedRef());
 	ActorPointAt.ToolTip(FText::FromString("The Actor the dust will point at."));
 	ActorPointAt.IsEnabled(!bSided);
+	ActorPointAt.GetPropertyHandle()->SetOnPropertyValueChanged(FSimpleDelegate::CreateUObject(DusterControl, &UDusterControl::Update2D));
+
 
 	ChildBuilder.AddCustomRow(FText::FromString("Create actor"))
 	.ValueContent()
@@ -71,9 +77,10 @@ void FDusterInfo2DCustomisation::CustomizeChildren(TSharedRef<IPropertyHandle> P
 		for (int i = 0; i < 6; i++)
 		{
 			IDetailGroup& SubGroup = ChildBuilder.AddGroup(*FString::Printf(TEXT("Side %d"), i), FText::FromString(FString::Printf(TEXT("Side %d"), i)));
+			
+			TSharedPtr<IPropertyHandle> ActorOverrideHandle = PropertyHandle->GetChildHandle("Sides")->AsArray()->GetElement(i)->GetChildHandle("ActorToPointAtOverride");
+			ActorOverrideHandle->SetOnPropertyValueChanged(FSimpleDelegate::CreateUObject(DusterControl, &UDusterControl::Update2D));
 
-			//TSharedPtr<IPropertyHandle> ActorOverrideHandle = PropertyHandle->GetChildHandle("ActorToPointAt", true);
-			TSharedPtr<IPropertyHandle> ActorOverrideHandle = PropertyHandle->GetChildHandle("Sides")->AsArray()->GetElement(i)->GetChildHandle("ActorToPointAt");
 			TSharedPtr<IPropertyHandle> OverrideActorHandle = PropertyHandle->GetChildHandle("Sides")->AsArray()->GetElement(i)->GetChildHandle("bOverrideActor");
 
 			OverrideActorHandle->SetOnPropertyValueChanged(OnValueChanged);
@@ -107,6 +114,8 @@ void FDusterInfo2DCustomisation::CustomizeChildren(TSharedRef<IPropertyHandle> P
 			];
 
 			TSharedPtr<IPropertyHandle> DensityOverrideHandle = PropertyHandle->GetChildHandle("Sides")->AsArray()->GetElement(i)->GetChildHandle("DensityOverride");
+			DensityOverrideHandle->SetOnPropertyValueChanged(FSimpleDelegate::CreateUObject(DusterControl, &UDusterControl::Update2D));
+
 			TSharedPtr<IPropertyHandle> OverrideDensityHandle = PropertyHandle->GetChildHandle("Sides")->AsArray()->GetElement(i)->GetChildHandle("bOverrideDensity");
 
 			OverrideDensityHandle->SetOnPropertyValueChanged(OnValueChanged);

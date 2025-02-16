@@ -54,6 +54,7 @@ public class Duster : ModuleRules
 				"GeometryFramework",
 				"EditorScriptingUtilities",
 				"GeometryScriptingEditor",
+				"MaterialEditor",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

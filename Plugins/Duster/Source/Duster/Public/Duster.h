@@ -13,11 +13,11 @@ public:
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
 
-	void PluginButtonClicked();
+	static void PluginButtonClicked();
 
 private:
 	void RegisterMenus();
 
-	TSharedRef<class SDockTab> OnSpawnPluginTab(const class FSpawnTabArgs& SpawnTabArgs);
-	TSharedPtr<class FUICommandList> PluginCommands;
+	static TSharedRef<SDockTab> OnSpawnPluginTab(const FSpawnTabArgs& SpawnTabArgs);
+	TSharedPtr<FUICommandList> PluginCommands;
 };

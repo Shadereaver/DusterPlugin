@@ -10,31 +10,25 @@ class DUSTER_API UDuster3DComponent : public UEditorUtilityActorComponent
 {
 	GENERATED_BODY()
 
-	virtual bool IsEditorOnly() const override;
-	
 public:
-	void Delete();
+	UDuster3DComponent();
 	
-	UFUNCTION(BlueprintNativeEvent, CallInEditor)
+	void Delete() const;
+	
 	void CreateMesh();
 	
-	UFUNCTION(BlueprintCallable)
-	FString CreateName(FString InName);
-
-	UFUNCTION(BlueprintCallable)
-	void SaveAsset(FString PackageName, UObject* Object);
-
-	UFUNCTION(BlueprintCallable)
-	UStaticMeshComponent* CreateMeshComponent(AActor* Actor, UStaticMeshComponent* OriginalMeshComponent);
-
-	UPROPERTY(BlueprintReadOnly)
-	FLocalDusterInfo3D LocalDusterInfo3D;
-
 	FLocalDusterInfo3D Settings;
+
+	TObjectPtr<UDusterInfo3D> Profile;
 	
 private:
+	UPROPERTY()
 	TObjectPtr<UStaticMeshComponent> OriginalMeshComponent;
+	
+	UPROPERTY()
 	TObjectPtr<UStaticMeshComponent> GeneratedMeshComponent;
+	
+	UPROPERTY()
 	TObjectPtr<UStaticMesh> GeneratedMesh;
 	
 	FString GeneratedMeshName;

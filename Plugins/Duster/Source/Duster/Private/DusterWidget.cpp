@@ -1,4 +1,4 @@
-#include "SDusterWidget.h"
+#include "DusterWidget.h"
 
 #include "DusterControl.h"
 #include "DusterSubsystem.h"
@@ -15,8 +15,12 @@ void SDusterWidget::Construct(const FArguments& InArgs)
 	Args.bHideSelectionTip = true;
 
 	PropertyWidget = PropertyModule.CreateDetailView(Args);
+
+	TObjectPtr<UDusterControl> DusterControl = GEditor->GetEditorSubsystem<UDusterSubsystem>()->GetDusterControl();
 	
-	PropertyWidget->SetObject(GEditor->GetEditorSubsystem<UDusterSubsystem>()->GetDusterControl());
+	PropertyWidget->OnFinishedChangingProperties().AddUObject(DusterControl, &UDusterControl::UpdateMesh);
+	
+	PropertyWidget->SetObject(DusterControl);
 	
 	ChildSlot
 	[

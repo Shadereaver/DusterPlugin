@@ -5,7 +5,7 @@
 #include "DusterDetailsCustomization.h"
 #include "DusterInfo2DCustomisation.h"
 #include "DusterInfo3DCustomisation.h"
-#include "SDusterWidget.h"
+#include "DusterWidget.h"
 #include "Widgets/Docking/SDockTab.h"
 #include "Widgets/Layout/SBox.h"
 #include "Widgets/Text/STextBlock.h"
@@ -24,11 +24,11 @@ void FDusterModule::StartupModule()
 	PluginCommands = MakeShareable(new FUICommandList);
 
 	PluginCommands->MapAction(FDusterCommands::Get().OpenPluginWindow,
-		FExecuteAction::CreateRaw(this, &FDusterModule::PluginButtonClicked), FCanExecuteAction());
+		FExecuteAction::CreateStatic(&FDusterModule::PluginButtonClicked), FCanExecuteAction());
 
 	UToolMenus::RegisterStartupCallback(FSimpleMulticastDelegate::FDelegate::CreateRaw(this, &FDusterModule::RegisterMenus));
 
-	FGlobalTabmanager::Get()->RegisterNomadTabSpawner(DusterTabName, FOnSpawnTab::CreateRaw(this, &FDusterModule::OnSpawnPluginTab))
+	FGlobalTabmanager::Get()->RegisterNomadTabSpawner(DusterTabName, FOnSpawnTab::CreateStatic(&FDusterModule::OnSpawnPluginTab))
 	.SetDisplayName(LOCTEXT("FDusterTabTitle", "Duster"))
 	.SetMenuType(ETabSpawnerMenuType::Hidden);
 

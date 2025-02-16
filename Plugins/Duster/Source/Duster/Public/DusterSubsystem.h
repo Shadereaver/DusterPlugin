@@ -19,6 +19,8 @@ public:
 
 	void BindSelectionChanged(TSharedPtr<ILevelEditor> LevelEditor);
 
+	static void SaveAsset(const FString& PackageName, const TObjectPtr<UObject>& Object);
+
 private:
 	TObjectPtr<UDusterControl> DusterControl;
 };
