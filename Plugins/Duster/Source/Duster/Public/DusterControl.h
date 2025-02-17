@@ -56,6 +56,8 @@ USTRUCT(BlueprintType)
 struct FLocalDusterInfo2D
 {
 	GENERATED_BODY()
+
+	TWeakObjectPtr<UDusterInfo2D> Profile;
 	
 	UPROPERTY(EditAnywhere, Category = "LocalDusterInfo2D")
 	TObjectPtr<UTexture> Texture;
@@ -104,6 +106,7 @@ public:
 	void Profile2DChanged();
 
 	void UpdateLocal3D(const FLocalDusterInfo3D& Local);
+	void UpdateLocal2D(const FLocalDusterInfo2D& Local);
 
 	UFUNCTION()
 	void OnSelectionChanged(const UTypedElementSelectionSet* SelectionSet);

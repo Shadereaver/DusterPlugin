@@ -79,11 +79,11 @@ void UDuster3DComponent::CreateMesh()
 	FGeometryScriptMeshSelection SingleRing = AccumulatedRingSelect;
 	FGeometryScriptMeshSelection FullRing = AccumulatedRingSelect;
 
-	for (int i = 0; i < Settings.Resolution + 1; ++i)
+	for (int i = 0; i < Settings.Resolution + 2; ++i)
 	{
 		float MinTime, MaxTime;
 		Settings.Falloff->GetTimeRange(MinTime, MaxTime);
-		float ClampedValue = UKismetMathLibrary::MapRangeClamped(i, 0.0f, Settings.Resolution + 1, MinTime, MaxTime);
+		float ClampedValue = UKismetMathLibrary::MapRangeClamped(i, 0.0f, Settings.Resolution + 2, MinTime, MaxTime);
 		float FalloffValue = Settings.Falloff->GetFloatValue(ClampedValue) - Settings.Falloff->GetFloatValue(0);
 
 		DynamicMesh = UGeometryScriptLibrary_MeshDeformFunctions::ApplyDisplaceFromPerVertexVectors(DynamicMesh, SingleRing, FlattenedNormals, FalloffValue * Settings.FalloffMultiplier);
