@@ -10,6 +10,6 @@ The duster plugin aims to allow adding snow/sand/etc to an object using either a
 3. Open project. 
 4. Open Duster window from windows tab.
 
-[Video guide](https://www.youtube.com/watch?v=xpr2tUIxLbQ)
+[Setup guide](https://www.youtube.com/watch?v=xpr2tUIxLbQ)
 
 [Usage guide](https://www.youtube.com/watch?v=uJfwmLwrXFg)
